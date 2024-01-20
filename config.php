@@ -1,8 +1,8 @@
 <?php
 $servername = "localhost";
 $username = "root";
-$password = "";
-$db = "imsportal";
+$password = "root";
+$db = "my_proj_db";
 // Create connection
 $connection = mysqli_connect($servername, $username, $password, $db);
 // Check connection
