@@ -2,7 +2,9 @@
     include('../config.php');
     session_start();
     $msg="";
+    ///////////////////////////////////////////////////////////////////////
 
+    /////////////////////////////////////////////////////////////////////////
     if(isset($_POST['login'])){
         $username = $_POST['username'];
         $password = $_POST['password'];
@@ -17,17 +19,25 @@
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
+        // Add these echo statements for debugging
+        echo "Rows returned: " . $result->num_rows . "<br>";
+        $row = $result->fetch_assoc();
+        var_dump($row); // Output the contents of $row for debugging
 
-        session_regenerate_id();
-        $_SESSION['role'] = $row['username'];
-        $_SESSION['branch'] = $row['branch'];
-        $_SESSION['division'] = $row['division'];
-        session_write_close();
 
-        if($row['username'] == $username && $row['password'] == $password){
-            header("location:dashboard.php"); }
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            session_regenerate_id();
+            $_SESSION['role'] = $row['username'];
+            $_SESSION['branch'] = $row['branch'];
+            $_SESSION['division'] = $row['division'];
+            session_write_close();
+
+            header("location:dashboard.php");
+        }
         else{
               $msg="username or password incorrect";
+              
         }
     }
 ?>
@@ -128,7 +138,3 @@
     }
 </script>
 
-<?php include('../header.php'); ?> 
-
-</body>
-</html>
