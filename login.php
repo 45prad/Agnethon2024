@@ -25,7 +25,7 @@ include('../config.php');
             header("location:dashboard.php");
         }
         else{
-              $msg="username or password incorrect";
+              $msg="username or password is incorrect";
         }
     }
 ?>
