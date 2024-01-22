@@ -887,7 +887,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function updateSelectedItems(checkbox) {
+function updateSelectedItems(checkbox, tableId) {
     var row = checkbox.parentNode.parentNode;
 
     var selectedItemsTableBody = document.getElementById("selectedItemsTable").getElementsByTagName("tbody")[0];
@@ -897,7 +897,7 @@ function updateSelectedItems(checkbox) {
         var clonedRow = row.cloneNode(true);
         selectedItemsTableBody.appendChild(clonedRow);
         row.classList.add('highlighted-row');
-        
+
         // Show the selected items section with animation
         selectedItemsTableContainer.classList.add('show');
     } else {
@@ -908,7 +908,7 @@ function updateSelectedItems(checkbox) {
                 row.classList.remove('highlighted-row');
 
                 // If no selected items left, hide the selected items section
-                if (selectedItemsTableRows.length === 1) {
+                if (selectedItemsTableBody.childElementCount === 0) {
                     selectedItemsTableContainer.classList.remove('show');
                 }
                 break;
