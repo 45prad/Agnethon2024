@@ -25,7 +25,21 @@ session_start();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 </head>
+<style>
 
+#selectedItemsTableContainer {
+    display: none; /* Initially set display to none */
+    max-height: 0; /* Initially set max-height to 0 */
+    overflow: hidden; /* Hide content outside the max-height */
+    transition: max-height 0.5s ease; /* Add a transition for max-height with a duration of 0.5 seconds */
+}
+
+#selectedItemsTableContainer.show {
+    display: block; /* Set display to block when the show class is added */
+    max-height: 500px; /* Set a maximum height for a smooth appearance (adjust as needed) */
+}
+
+</style>
 
 <body>
 
@@ -254,7 +268,40 @@ session_start();
             </form>
             </div>
             </div>
+<!--//@richie-->
+<!-- Selected batch download items table -->
+            <div id="selectedItemsTableContainer" class="card mt-4">
 
+            <div class="card-body">
+                <h3>Selected Items for Batch Download</h3>
+                <button type="submit" onclick="exportTableToCSVuserBatch('USerData_StudentCourses&amp;Workshops.csv')" class="btn btn-success">Export selected to excel</button>
+                <table id="selectedItemsTable" class="table table-bordered table-dark mt-2">
+                    <thead>
+                        <tr>
+                            <th scope="col"> </th>
+                            <th scope="col">ID</th>
+                            <th scope="col">NAME OF STUDENT</th>
+                            <th scope="col">ROLL NUMBER</th>
+                            <th scope="col">BRANCH</th>
+                            <th scope="col">DIVISION</th>
+                            <th scope="col">YEAR OF STUDY</th>
+                            <th scope="col">TYPE OF COURSE/WORKSHOP/SEMINAR</th>
+                            <th scope="col">TITLE OF COURSE/WORKSHOP/SEMINAR</th>
+                            <th scope="col">ORGANIZING INSTITUTE/BODY AND ITS LOCATION</th>
+                            <th scope="col">PROFESSIONAL BODY/ORGANIZATION ASSOCIATED WITH THE EVENT IF ANY,</th>
+                            <th scope="col">DURATION (IN WEEKS OR DAYS)</th>
+                            <th scope="col">STARTING DATE</th>
+                            <th scope="col">ENDING DATE</th>
+                            <th scope="col">ACTION</th>
+                            <th scope="col">STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Selected items will appear here -->
+                    </tbody>
+                </table>
+            </div>
+            </div>
              <!-- table -->
             <div id="tabledataid" class="card">
                 <div class="card-body">
@@ -262,6 +309,7 @@ session_start();
                     <table id="datatableid" class="table table-bordered table-dark mt-2">
                         <thead>
                             <tr>
+                                <th scope="col" id = "checkboxContainer">  </th> <!--@richie-->
                                 <th scope="col"> ID </th>
                                 <th scope="col"> NAME OF STUDENT </th>
                                 <th scope="col"> ROLL NUMBER </th>
@@ -311,6 +359,9 @@ session_start();
                 $is_disabled = ($status == "approved") ? "disabled" : "";
                 // If STATUS is "approved", set the $is_disabled variable to "disabled"
                 ?>
+                                <td>
+                                    <input type="checkbox" class="select-checkbox" name="selectedRows[]" value="<?php echo $developer['id']; ?>">
+                                </td>
                                 <td> <?php echo $developer['id']; ?> </td>
                                 <td> <?php echo $developer['Name_Of_The_Student']; ?> </td>
                                 <td> <?php echo $developer['Roll_no']; ?> </td> 
@@ -527,6 +578,7 @@ else
                     <table class="table table-bordered ">
                     <thead>
                         <tr>
+                           
                             <th> ID </th> 
                             <th> NAME OF STUDENT </th>
                             <th> ROLL NUMBER </th>
@@ -573,6 +625,10 @@ else
                 $is_disabled = ($status == "approved") ? "disabled" : "";
                 // If STATUS is "approved", set the $is_disabled variable to "disabled"
                 ?>  
+                        <td>
+                            <input type="checkbox" class="select-checkbox" name="selectedRows[]" value="<?php echo $row['id']; ?>" onclick="updateSelectedItems(this, 'srch');">
+                        </td>
+
                         <td> <?php echo $row['id']; ?> </td>
                         <td> <?php echo $row['Name_Of_The_Student']; ?> </td> 
                         <td> <?php echo $row['Roll_no']; ?> </td>
@@ -657,7 +713,7 @@ else
 
                 console.log(data);
 
-                $('#delete_id').val(data[0]);
+                $('#delete_id').val(data[1]);
 
             });
         });
@@ -678,20 +734,20 @@ else
 
                 console.log(data);
                 //chnage this keep same variable as above
-                $('#update_id').val(data[0]);
-                $('#Name_Of_The_Student').val(data[1]);
-                $('#Roll_no').val(data[2]);
-                $('#Branch').val(data[3]);
-                $('#division').val(data[4]);
-                $('#Year_Of_Study').val(data[5]);
-                $('#Type_Of_Course').val(data[6]);
-                $('#Title_Of_Course').val(data[7]);
-                $('#Organizing_Body').val(data[8]);
-                $('#Others').val(data[9]);
-                $('#Duration').val(data[10]);
-                $('#Dates_From').val(data[11]);
-                $('#Dates_To').val(data[12]);
-                $('#pdffile1').val(data[13]);
+                $('#update_id').val(data[1]);
+                $('#Name_Of_The_Student').val(data[2]);
+                $('#Roll_no').val(data[3]);
+                $('#Branch').val(data[4]);
+                $('#division').val(data[5]);
+                $('#Year_Of_Study').val(data[6]);
+                $('#Type_Of_Course').val(data[7]);
+                $('#Title_Of_Course').val(data[8]);
+                $('#Organizing_Body').val(data[9]);
+                $('#Others').val(data[10]);
+                $('#Duration').val(data[11]);
+                $('#Dates_From').val(data[12]);
+                $('#Dates_To').val(data[13]);
+                $('#pdffile1').val(data[14]);
                 
             });
         });
@@ -722,7 +778,7 @@ else
         downloadLink.click();  
     }  
 
-    //user-defined function to export the data to CSV file format  
+    //user-defined function to export the data in the main table to CSV file format  
     function exportTableToCSVuser(filename) {  
     //declare a JavaScript variable of array type  
     var csv = [];  
@@ -747,6 +803,31 @@ else
     //call the function to download the CSV file  
     downloadCSVuser(csv.join("\n"), filename);  
     }  
+    
+    function exportTableToCSVuserBatch(filename) {  
+    //declare a JavaScript variable of array type  
+    var csv = [];  
+    var x=document.getElementById("selectedItemsTable");
+    var rows = x.querySelectorAll("table tr");  
+
+    //merge the whole data in tabular form   
+    for (var i = 0; i < rows.length; i++) {  
+    var row = [];
+    var cols = rows[i].querySelectorAll("td, th");  
+    for (var j = 1; j < cols.length - 2; j++) {
+        // Check if the cell value contains a comma, if so, wrap it in double quotes
+        var cellValue = cols[j].innerText;
+        if (cellValue.includes(',')) {
+            row.push('"' + cellValue + '"');
+        } else {
+            row.push(cellValue);
+        }
+    }
+    csv.push(row.join(","));
+} 
+    //call the function to download the CSV file  
+    downloadCSVuser(csv.join("\n"), filename);  
+    } 
 </script> 
 
 <script>  
@@ -766,7 +847,7 @@ else
         downloadLink.click();  
     }  
 
-    //user-defined function to export the data to CSV file format  
+    //user-defined function to export the data in the search results to CSV file format  
     function exportTableToCSV(filename) {  
     //declare a JavaScript variable of array type  
     var csv = [];  
@@ -792,6 +873,98 @@ else
     downloadCSV(csv.join("\n"), filename);  
     }  
 </script> 
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var table = document.getElementById('tabledataid');
+    
+    table.addEventListener('change', function (event) {
+        var checkbox = event.target.closest('tr').querySelector('.select-checkbox');
+        if (checkbox && event.target === checkbox) {
+            updateSelectedItems(checkbox);
+            toggleSelectedItemsTable();
+        }
+    });
+});
+
+function updateSelectedItems(checkbox) {
+    var row = checkbox.parentNode.parentNode;
+
+    var selectedItemsTableBody = document.getElementById("selectedItemsTable").getElementsByTagName("tbody")[0];
+    var selectedItemsTableContainer = document.getElementById("selectedItemsTableContainer");
+
+    if (checkbox.checked) {
+        var clonedRow = row.cloneNode(true);
+        selectedItemsTableBody.appendChild(clonedRow);
+        row.classList.add('highlighted-row');
+        
+        // Show the selected items section with animation
+        selectedItemsTableContainer.classList.add('show');
+    } else {
+        var selectedItemsTableRows = selectedItemsTableBody.getElementsByTagName('tr');
+        for (var i = 0; i < selectedItemsTableRows.length; i++) {
+            if (areRowsEqual(row, selectedItemsTableRows[i])) {
+                selectedItemsTableBody.removeChild(selectedItemsTableRows[i]);
+                row.classList.remove('highlighted-row');
+
+                // If no selected items left, hide the selected items section
+                if (selectedItemsTableRows.length === 1) {
+                    selectedItemsTableContainer.classList.remove('show');
+                }
+                break;
+            }
+        }
+    }
+}
+
+
+function areRowsEqual(row1, row2) {
+    var cells1 = row1.getElementsByTagName('td');
+    var cells2 = row2.getElementsByTagName('td');
+
+    for (var i = 1; i < cells1.length - 2; i++) {
+        if (cells1[i].innerText !== cells2[i].innerText) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+function toggleSelectedItemsTable() {
+    var selectedItemsTable = document.getElementById('selectedItemsTable');
+    var checkboxes = document.querySelectorAll('.select-checkbox:checked');
+
+    // Show the selected items table if there are checked checkboxes, hide otherwise
+    if (checkboxes.length > 0) {
+        selectedItemsTableContainer.style.display = 'block';
+    } else {
+        selectedItemsTableContainer.style.display = 'none';
+    }
+}
+
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var checkboxId = "checkbox_<?php echo $developer['id']; ?>";
+    var checkbox = document.getElementById(checkboxId);
+
+    // Check if the checkbox exists
+    if (checkbox) {
+        // Toggle the visibility of the checkbox when the button is clicked
+        var bulkDownloadButton = document.getElementById('bulkDownloadButton');
+        bulkDownloadButton.addEventListener('click', function () {
+            checkbox.style.display = (checkbox.style.display === 'none') ? '' : 'none';
+        });
+    }
+});
+
+ 
+</script>
+
+
 
 
 </body>
