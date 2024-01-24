@@ -10,8 +10,8 @@
         $password = $_POST['password'];
         $branch = $_POST['branch'];
         $division = $_POST['division'];
-       
         $password= sha1($password);
+        
 
         $sql = "SELECT * FROM student WHERE username=? AND password=? AND branch=? AND division=?";
         $stmt = $connection->prepare($sql);
